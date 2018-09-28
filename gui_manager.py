@@ -36,7 +36,7 @@ def show_vocabs(vocabs):
             headers = ["Wort", "Grundform", "Zusatz", "Übersetzung"]
             for j, header in enumerate(headers):
                 app.label(f"header_{i}_{j}", header, row=0, column=j+1)
-            for j, (word, lemma, adds) in enumerate(sentence):
+            for j, (word, lemma, adds, _) in enumerate(sentence):
                 word_id = f"{i}_{j}"
                 row = j + 2
                 app.addNamedButton("del", f"btn_{word_id}", press, row=row, column=0)

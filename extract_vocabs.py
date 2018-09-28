@@ -100,7 +100,7 @@ class VocabExtracter:
             for index, tag in zip(tags_to_change, new_tags):
                 tags[index] = tag
         lemmata = [lemma.rstrip(string.digits) for lemma in lemmata]
-        return new_words, lemmata, tags
+        return new_words, lemmata, tags, (np.array(tags_to_change[::2]) - np.arange(len(tags_to_change) // 2))
 
     def extract_vocabs(self, text):
         sentences = self.se_tokenizer.tokenize(text)
@@ -124,16 +124,21 @@ class VocabExtracter:
             lemmata = self.lemmatizer.lemmatize(words)
             tags = [tag for tag in self.pos_tagger.tag_ngram_123_backoff(sentence) if tag[0] not in PUNCTUATION_SIGNS
                     and not number_re.match(tag[0])]
-            words, lemmata, tags = self.sanitize(words, lemmata, tags)
+            words, lemmata, tags, splitted_indices = self.sanitize(words, lemmata, tags)
             print(words)
             print(lemmata)
             print(tags)
+            print(splitted_indices)
             additionals = []
             for word, lemma, tag in zip(words, lemmata, tags):
                 additionals.append(self.get_additionals(lemma, tag))
             print(additionals)
+            original_indices = np.arange(len(words))
+            for splitted_index in splitted_indices:
+                original_indices -= np.where(original_indices > splitted_index, 1, 0)
+            print(original_indices)
+            vocabs.append(list(zip(words, lemmata, additionals, original_indices)))
             print()
-            vocabs.append(list(zip(words, lemmata, additionals)))
 
         vocabs = self.make_unique(vocabs)
         return vocabs
@@ -146,6 +151,12 @@ class VocabExtracter:
                 key = f"{vocab[1]}_{vocab[2]}"
                 if key not in new_vocabs:
                     new_vocabs[key] = vocab
+                else:
+                    original_indices = new_vocabs[key][3]
+                    if type(original_indices) is not list:
+                        original_indices = [original_indices]
+                    original_indices.append(vocab[3])
+                    new_vocabs[key] = new_vocabs[key][0], new_vocabs[key][1], new_vocabs[key][2], original_indices
             vocabs[i] = list(new_vocabs.values())
         return vocabs
 
