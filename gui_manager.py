@@ -2,9 +2,12 @@ from appJar import gui
 from extract_vocabs import VocabExtracter
 
 
-def insert_text_window():
+def insert_text_window(process_text):
     def press():
-        print("Text:", app.textArea("Text"))
+        text = app.textArea("Text")
+        print("Text:", text)
+        app.stop()
+        process_text(text)
 
     with gui("KlausurMaker", "800x400", font={'size':18}) as app:
         app.label("Bitte lateinischen Text einfügen:")
@@ -12,9 +15,31 @@ def insert_text_window():
         app.buttons(["Submit", "Cancel"], [press, app.stop])
 
 
-def show_vocabs(vocabs):
+def show_vocabs(vocabs, process_vocabs):
+    frames_name = "TabbedFrame"
+
     def press():
-        print("Text:", app.textArea("Text"))
+        vocabs_to_show = []
+        indices_of_shown = []
+        for i, sentence in enumerate(vocabs):
+            shown_in_sentence = []
+            for j, vocab in enumerate(sentence):
+                word_id = f"{i}_{j}"
+                print(word_id, app.checkBox(f"check_{word_id}"))
+                if not app.checkBox(f"check_{word_id}"):
+                    continue
+                new_lemma = app.entry(f"lemma_{word_id}")
+                new_adds = app.entry(f"adds_{word_id}")
+                new_translation = app.entry(f"translation_{word_id}")
+                shown_in_sentence.append((vocab[0], new_lemma, new_adds, new_translation))
+                indices_of_shown.extend(vocab[3] if type(vocab[3]) is list else [vocab[3]])
+                print(new_lemma, new_adds, new_translation)
+            vocabs_to_show.append(shown_in_sentence)
+        print(vocabs_to_show)
+        print(indices_of_shown)
+        app.stop()
+        process_vocabs(vocabs_to_show, indices_of_shown)
+
 
     longest_sentence_count = max(len(sentence) for sentence in vocabs)
     height = min(170 + 42 * longest_sentence_count, 1000)
@@ -28,7 +53,6 @@ def show_vocabs(vocabs):
         app.startScrollPane("PANE", disabled="horizontal")
         app.setScrollPaneHeight("PANE", height - 80)
         app.setScrollPaneWidth("PANE", width)
-        frames_name = "TabbedFrame"
         app.startTabbedFrame(frames_name)
         app.setTabbedFrameTabExpand(frames_name, True)
         for i, sentence in enumerate(vocabs):
@@ -59,5 +83,5 @@ if __name__ == '__main__':
     # insert_text_window()
     with open("./test_text.txt", "r") as f:
         text = f.read()
-    vocabs = VocabExtracter().extract_vocabs(text)
-    show_vocabs(vocabs)
+    vocabs, starts_with_numbers = VocabExtracter().extract_vocabs(text)
+    show_vocabs(vocabs, lambda x: x)
