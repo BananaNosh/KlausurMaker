@@ -1,16 +1,20 @@
 import gui_manager
 from extract_vocabs import VocabExtracter
 from doc_creater import create_klausur_template
+import re
 
 
 def process_text(text):
-    vocabs, starts_with_numbers = VocabExtracter().extract_vocabs(text)
-
+    sentence_delimiters = re.split("[.!?:](\W|)", text)[1:-2:2]
+    vocabs, starts_with_numbers, sentences = VocabExtracter().extract_vocabs(text)
+    if len(sentence_delimiters) != len(sentences)-1:
+        sentence_delimiters = [" "] * (len(sentences) - 1)
     def create_doc(vocabs_to_show, indices_of_shown):
         title = "1. Lateinklausur E1, 26.09.18"
         filename = "demo.docx"
         print(vocabs_to_show, indices_of_shown)
-        create_klausur_template(filename, title, text, vocabs_to_show, indices_of_shown, starts_with_numbers)
+        create_klausur_template(filename, title, sentences, sentence_delimiters, vocabs_to_show, indices_of_shown,
+                                starts_with_numbers)
 
     gui_manager.show_vocabs(vocabs, create_doc)
 

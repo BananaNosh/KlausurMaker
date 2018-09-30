@@ -141,7 +141,7 @@ class VocabExtracter:
             print()
 
         vocabs = self.make_unique(vocabs)
-        return vocabs, starts_with_numbers
+        return vocabs, starts_with_numbers, sentences
 
     @staticmethod
     def make_unique(vocabs):
@@ -165,5 +165,5 @@ if __name__ == '__main__':
     with open("./test_text.txt", "r") as f:
         test_text = f.read()
 
-    vocabs, starts_with_numbers = VocabExtracter().extract_vocabs(test_text)
-    print(vocabs, starts_with_numbers)
+    vocabs, starts_with_numbers, sentences = VocabExtracter().extract_vocabs(test_text)
+    print(vocabs, starts_with_numbers, sentences)

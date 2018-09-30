@@ -5,7 +5,6 @@ from extract_vocabs import VocabExtracter
 def insert_text_window(process_text):
     def press():
         text = app.textArea("Text")
-        print("Text:", text)
         app.stop()
         process_text(text)
 
@@ -23,6 +22,7 @@ def show_vocabs(vocabs, process_vocabs):
         indices_of_shown = []
         for i, sentence in enumerate(vocabs):
             shown_in_sentence = []
+            indices_of_shown_in_sentence = []
             for j, vocab in enumerate(sentence):
                 word_id = f"{i}_{j}"
                 print(word_id, app.checkBox(f"check_{word_id}"))
@@ -32,9 +32,10 @@ def show_vocabs(vocabs, process_vocabs):
                 new_adds = app.entry(f"adds_{word_id}")
                 new_translation = app.entry(f"translation_{word_id}")
                 shown_in_sentence.append((vocab[0], new_lemma, new_adds, new_translation))
-                indices_of_shown.extend(vocab[3] if type(vocab[3]) is list else [vocab[3]])
+                indices_of_shown_in_sentence.extend(vocab[3] if type(vocab[3]) is list else [vocab[3]])
                 print(new_lemma, new_adds, new_translation)
             vocabs_to_show.append(shown_in_sentence)
+            indices_of_shown.append(indices_of_shown_in_sentence)
         print(vocabs_to_show)
         print(indices_of_shown)
         app.stop()
@@ -83,5 +84,6 @@ if __name__ == '__main__':
     # insert_text_window()
     with open("./test_text.txt", "r") as f:
         text = f.read()
-    vocabs, starts_with_numbers = VocabExtracter().extract_vocabs(text)
+    vocabs, starts_with_numbers, sentences = VocabExtracter().extract_vocabs(text)
     show_vocabs(vocabs, lambda x: x)
+    print(sentences)

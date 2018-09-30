@@ -34,4 +34,4 @@ class ExtractVocabTest(unittest.TestCase):
 
     def test_extract(self):
         text = "tecum omnis tecum tecum rexque reginaque sub in dominusque at dominaque"
-        vocabs, starts_with_vocabs = self.extracter.extract_vocabs(text)
+        vocabs, starts_with_vocabs, sentences = self.extracter.extract_vocabs(text)
