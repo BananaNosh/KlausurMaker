@@ -1,17 +1,48 @@
 from appJar import gui
 from extract_vocabs import VocabExtracter
+import datetime
+import os
 
 
-def insert_text_window(process_text):
+def show_information_and_text_window(process_text):
+    text_name = "Text"
+    number_name = "number"
+    name_name = "name"
+    date_name = "date"
+    directory_name = "directory"
+    file_name = "file"
+
+    default_filename = "klausur.docx"
+
     def press():
-        text = app.textArea("Text")
+        text = app.textArea(text_name)
+        number = app.entry(number_name)
+        name = app.entry(name_name)
+        date = app.entry(date_name)
+        title = f"{number}. {name} {date}"
+        directory = app.entry(directory_name)
+        directory = directory if os.path.isdir(directory) else "."
+        filename = app.entry(file_name)
+        filename = filename if len(filename) > 0 else default_filename
+        name_without_ext, _ = os.path.splitext(filename)
+        ext = ".docx"
         app.stop()
-        process_text(text)
+        process_text(text, title, os.path.join(directory, name_without_ext + ext))
 
     with gui("KlausurMaker", "800x400", font={'size':18}) as app:
-        app.label("Bitte lateinischen Text einfügen:")
-        app.textArea("Text", label=False, focus=True)
-        app.buttons(["Submit", "Cancel"], [press, app.stop])
+        app.addEntry(number_name, row=0, column=0)
+        app.setEntry(number_name, "1")
+        app.addEntry(name_name, row=0, column=1)
+        app.setEntry(name_name, "Lateinklausur E1")
+        app.addEntry(date_name, row=0, column=2)
+        app.setEntry(date_name, (datetime.date.today() + datetime.timedelta(1)).strftime("%d.%m.%y"))
+        app.addLabel("header", "Bitte lateinischen Text einfügen:", row=1, colspan=3)
+        app.addTextArea(text_name, row=2, colspan=3)
+        app.setTextAreaFocus(text_name)
+        app.addDirectoryEntry(directory_name, row=3, column=0, colspan=2)
+        app.addEntry(file_name, row=3, column=2)
+        app.setEntryDefault(file_name, default_filename)
+        app.addButtons(["Submit", "Cancel"], [press, app.stop], row=4, column=0)
 
 
 def show_vocabs(vocabs, process_vocabs):
@@ -40,7 +71,6 @@ def show_vocabs(vocabs, process_vocabs):
         print(indices_of_shown)
         app.stop()
         process_vocabs(vocabs_to_show, indices_of_shown)
-
 
     longest_sentence_count = max(len(sentence) for sentence in vocabs)
     height = min(170 + 42 * longest_sentence_count, 1000)
@@ -81,9 +111,14 @@ def show_vocabs(vocabs, process_vocabs):
 
 
 if __name__ == '__main__':
-    # insert_text_window()
-    with open("./test_text.txt", "r") as f:
-        text = f.read()
-    vocabs, starts_with_numbers, sentences = VocabExtracter().extract_vocabs(text)
-    show_vocabs(vocabs, lambda x: x)
-    print(sentences)
+    def on_press(text, title, filename):
+        print(title)
+        print(text)
+        print(filename)
+        with open("./test_text.txt", "r") as f:
+            text = f.read()
+        vocabs, starts_with_numbers, sentences = VocabExtracter().extract_vocabs(text)
+        show_vocabs(vocabs, lambda x: x)
+        print(sentences)
+
+    show_information_and_text_window(on_press)
