@@ -56,7 +56,6 @@ def show_vocabs(vocabs, process_vocabs):
             indices_of_shown_in_sentence = []
             for j, vocab in enumerate(sentence):
                 word_id = f"{i}_{j}"
-                print(word_id, app.checkBox(f"check_{word_id}"))
                 if not app.checkBox(f"check_{word_id}"):
                     continue
                 new_lemma = app.entry(f"lemma_{word_id}")
@@ -64,11 +63,8 @@ def show_vocabs(vocabs, process_vocabs):
                 new_translation = app.entry(f"translation_{word_id}")
                 shown_in_sentence.append((vocab[0], new_lemma, new_adds, new_translation))
                 indices_of_shown_in_sentence.extend(vocab[3] if type(vocab[3]) is list else [vocab[3]])
-                print(new_lemma, new_adds, new_translation)
             vocabs_to_show.append(shown_in_sentence)
             indices_of_shown.append(indices_of_shown_in_sentence)
-        print(vocabs_to_show)
-        print(indices_of_shown)
         app.stop()
         process_vocabs(vocabs_to_show, indices_of_shown)
 
@@ -115,7 +111,7 @@ if __name__ == '__main__':
         print(title)
         print(text)
         print(filename)
-        with open("./test_text.txt", "r") as f:
+        with open("./templates/test_text.txt", "r") as f:
             text = f.read()
         vocabs, starts_with_numbers, sentences = VocabExtracter().extract_vocabs(text)
         show_vocabs(vocabs, lambda x: x)

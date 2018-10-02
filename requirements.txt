@@ -1,0 +1,4 @@
+cltk
+appJar
+PyInstaller
+python-docx

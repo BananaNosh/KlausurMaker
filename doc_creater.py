@@ -7,7 +7,7 @@ import re
 
 def create_klausur_template(filename, title, sentences, sentence_delimiters, vocabs_to_show, indices_of_shown,
                             show_numbers=False):
-    document = Document()
+    document = Document("./templates/default.docx")
     normal_style = document.styles["Normal"]
     normal_style.font.name = "Times New Roman"
     normal_style.font.size = Pt(14)
