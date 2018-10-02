@@ -137,7 +137,8 @@ class VocabExtracter:
             for splitted_index in splitted_indices:
                 original_indices -= np.where(original_indices > splitted_index, 1, 0)
             print(original_indices)
-            vocabs.append(list(zip(words, lemmata, additionals, original_indices)))
+            translations = [""] * len(words)
+            vocabs.append(list(zip(words, lemmata, additionals, original_indices, translations)))
             print()
 
         vocabs = self.make_unique(vocabs)
@@ -156,7 +157,7 @@ class VocabExtracter:
                     if type(original_indices) is not list:
                         original_indices = [original_indices]
                     original_indices.append(vocab[3])
-                    new_vocabs[key] = new_vocabs[key][0], new_vocabs[key][1], new_vocabs[key][2], original_indices
+                    new_vocabs[key] = new_vocabs[key][0], new_vocabs[key][1], new_vocabs[key][2], original_indices, new_vocabs[key][4]
             vocabs[i] = list(new_vocabs.values())
         return vocabs
 

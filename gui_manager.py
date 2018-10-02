@@ -16,6 +16,9 @@ def show_information_and_text_window(process_text):
 
     def press():
         text = app.textArea(text_name)
+        if len(text) == 0:
+            app.setTextArea(text_name, "Bitte etwas einfügen!")
+            return
         number = app.entry(number_name)
         name = app.entry(name_name)
         date = app.entry(date_name)
@@ -87,7 +90,7 @@ def show_vocabs(vocabs, process_vocabs):
             headers = ["Wort", "Grundform", "Zusatz", "Übersetzung"]
             for j, header in enumerate(headers):
                 app.label(f"header_{i}_{j}", header, row=0, column=j+1)
-            for j, (word, lemma, adds, _) in enumerate(sentence):
+            for j, (word, lemma, adds, _, translation) in enumerate(sentence):
                 word_id = f"{i}_{j}"
                 row = j + 2
                 app.addNamedButton("del", f"btn_{word_id}", press, row=row, column=0)
@@ -99,7 +102,9 @@ def show_vocabs(vocabs, process_vocabs):
                 app.addEntry(adds_label, row=row, column=3, colspan=1)
                 if adds is not None:
                     app.setEntry(adds_label, adds, callFunction=False)
-                app.addEntry(f"translation_{word_id}", row=row, column=4)
+                translation_label = f"translation_{word_id}"
+                app.addEntry(translation_label, row=row, column=4)
+                app.setEntry(translation_label, translation)
             app.stopTab()
         app.stopTabbedFrame()
         app.stopScrollPane()
@@ -114,7 +119,7 @@ if __name__ == '__main__':
         with open("./templates/test_text.txt", "r") as f:
             text = f.read()
         vocabs, starts_with_numbers, sentences = VocabExtracter().extract_vocabs(text)
-        show_vocabs(vocabs, lambda x: x)
+        show_vocabs(vocabs, lambda x, y: x)
         print(sentences)
 
     show_information_and_text_window(on_press)
