@@ -67,8 +67,9 @@ def create_klausur_template(filename, title, sentences, sentence_delimiters, voc
             vocab_help_para.add_run(f" {i+1}")
         for j, (word, lemma, adds, translation) in enumerate(sentence):
             adds_string = f", {adds}" if adds is not None and len(adds) > 0 else ""
-            vocab_string = f" {lemma}{adds_string} - {translation}"
-            vocab_string = " " + vocab_string.replace(" ", u"\xa0").strip()
+            adds_string = adds_string.replace("-", u"\u2011")
+            vocab_string = f" {lemma}{adds_string} \u2011 {translation}"
+            vocab_string = (" " if j != 0 else u"\xa0") + vocab_string.replace(" ", u"\xa0").strip()
             vocab_help_para.add_run(vocab_string)
             vocab_help_para.add_run("," if j < len(sentence) - 1 else ".")
 
@@ -89,9 +90,9 @@ if __name__ == '__main__':
         'scelere iunxerunt, proficiscere ad impium et nefarium bellum!',
         '5 Tu, Juppiter, inimicos bonorum, hostes patriae, '
         'latrones Italiae aeternis suppliciis vivos mortuosque mactabis.']
-    vocabs = [[('Quare', 'quare', '', 'Deshalb'), ('congregentur', 'congregari', '', 'sich zusammenscharen')],
+    vocabs = [[('Quare', 'quare', '', 'Deshalb'), ('congregentur', 'congregari', 'congregatus sum', 'sich zusammenscharen')],
               [('Desinant', 'desinare', '', 'aufhören'),
                ('insidari', 'insidari', 'c. Dat', 'jemandem nach dem Leben trachten'),
-               ('faces', 'fax', 'facis f', 'Fackel')], [], [], []]
+               ('faces', 'fax', 'facis f', 'Fackel')], [], [], [("latrones", "latro", "-onis m", "Räuber")]]
     create_klausur_template(filename, title, sentences, [" ", " ", "\n", "\n"],
                             vocabs, [[0, 10], [0, 1, 8], [], [], []], True)
