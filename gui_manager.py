@@ -2,6 +2,7 @@ from appJar import gui
 from extract_vocabs import VocabExtracter
 import datetime
 import os
+import tkinter as tk
 
 
 def show_information_and_text_window(process_text):
@@ -72,10 +73,13 @@ def show_vocabs(vocabs, process_vocabs):
         process_vocabs(vocabs_to_show, indices_of_shown)
 
     longest_sentence_count = max(len(sentence) for sentence in vocabs)
-    height = min(170 + 42 * longest_sentence_count, 1000)
+    root = tk.Tk()
+    screen_height = root.winfo_screenheight()
+    height = min(170 + 42 * longest_sentence_count, 1000, screen_height * 0.85)
     width = 1060
 
     with gui("KlausurMaker", f"{width}x{height}", font={'size':18}) as app:
+        root.destroy()
         app.setSticky("news")
         app.setLocation("CENTER")
         app.setExpand("column")
