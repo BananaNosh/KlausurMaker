@@ -46,13 +46,13 @@ def show_information_and_text_window(process_text):
         app.addDirectoryEntry(directory_name, row=3, column=0, colspan=2)
         app.addEntry(file_name, row=3, column=2)
         app.setEntryDefault(file_name, default_filename)
-        app.addButtons(["Submit", "Cancel"], [press, app.stop], row=4, column=0)
+        app.addButtons(["Ok", "Abbrechen"], [press, app.stop], row=4, column=0)
 
 
 def show_vocabs(vocabs, process_vocabs):
     frames_name = "TabbedFrame"
 
-    def press():
+    def submit():
         vocabs_to_show = []
         indices_of_shown = []
         for i, sentence in enumerate(vocabs):
@@ -71,6 +71,22 @@ def show_vocabs(vocabs, process_vocabs):
             indices_of_shown.append(indices_of_shown_in_sentence)
         app.stop()
         process_vocabs(vocabs_to_show, indices_of_shown)
+
+    def delete(btn):
+        print(btn)
+        try:
+            i = int(btn[4])
+            j = int(btn[6])
+            word_id = f"{i}_{j}"
+            app.removeButton(f"btn_{word_id}")
+            app.getCheckBoxWidget(f"check_{i}_{j+1}").row = j
+            app.removeCheckBox(f"check_{word_id}")
+            app.removeEntry(f"lemma_{word_id}")
+            app.removeEntry(f"adds_{word_id}")
+            app.removeEntry(f"translation_{word_id}")
+        except (ValueError, IndexError):
+            print("Wrong btn name " + btn)
+            return
 
     longest_sentence_count = max(len(sentence) for sentence in vocabs)
     root = tk.Tk()
@@ -97,7 +113,7 @@ def show_vocabs(vocabs, process_vocabs):
             for j, (word, lemma, adds, _, translation) in enumerate(sentence):
                 word_id = f"{i}_{j}"
                 row = j + 2
-                app.addNamedButton("del", f"btn_{word_id}", press, row=row, column=0)
+                app.addNamedButton("del", f"btn_{word_id}", delete, row=row, column=0)
                 app.addNamedCheckBox(word, f"check_{word_id}", row=row, column=1, colspan=1)
                 lemma_label = f"lemma_{word_id}"
                 app.addEntry(lemma_label, row=row, column=2, colspan=1)
@@ -112,7 +128,7 @@ def show_vocabs(vocabs, process_vocabs):
             app.stopTab()
         app.stopTabbedFrame()
         app.stopScrollPane()
-        app.buttons(["Submit", "Cancel"], [press, app.stop])
+        app.buttons(["Ok", "Abbrechen"], [submit, app.stop])
 
 
 if __name__ == '__main__':
