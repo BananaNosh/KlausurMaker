@@ -93,11 +93,13 @@ def show_vocabs(vocabs, process_vocabs):
     screen_height = root.winfo_screenheight()
     height = min(170 + 42 * longest_sentence_count, 1000, screen_height * 0.85)
     width = 1060
+    print("width-height", width, height)
 
     with gui("KlausurMaker", f"{width}x{height}", font={'size':18}) as app:
         root.destroy()
         app.setSticky("news")
         app.setLocation("CENTER")
+        app.setResizable(True)
         app.setExpand("column")
         app.label("Gefundene Vokabeln:")
         app.startScrollPane("PANE", disabled="horizontal")
@@ -143,3 +145,10 @@ if __name__ == '__main__':
         print(sentences)
 
     show_information_and_text_window(on_press)
+
+
+
+root = tk.Tk()
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+print(screen_width, screen_height)
